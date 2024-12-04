@@ -19,6 +19,7 @@ public class Day4 {
 
     public Day4() {
         partOne();
+        partTwo();
     }
 
     @SneakyThrows
@@ -65,16 +66,14 @@ public class Day4 {
             int col = 0;
 
             for (int step = 0; step < COLS; step++) {
-                if (isOutOfBounds(row, col, ROWS, COLS))
-                    continue;
+                if (isOutOfBounds(row, col, ROWS, COLS)) continue;
 
                 sb.append(grid.get(row).get(col));
                 row++;
                 col++;
             }
 
-            if (sb.length() < 4)
-                continue;
+            if (sb.length() < 4) continue;
 
             diagonals.add(sb.toString());
         }
@@ -85,16 +84,14 @@ public class Day4 {
             int row = 0;
 
             for (int step = 0; step < COLS; step++) {
-                if (isOutOfBounds(row, col, ROWS, COLS))
-                    continue;
+                if (isOutOfBounds(row, col, ROWS, COLS)) continue;
 
                 sb.append(grid.get(row).get(col));
                 row++;
                 col++;
             }
 
-            if (sb.length() < 4)
-                continue;
+            if (sb.length() < 4) continue;
 
             diagonals.add(sb.toString());
         }
@@ -106,16 +103,14 @@ public class Day4 {
             int col = COLS - 1;
 
             for (int step = 0; step < COLS; step++) {
-                if (isOutOfBounds(row, col, ROWS, COLS))
-                    continue;
+                if (isOutOfBounds(row, col, ROWS, COLS)) continue;
 
                 sb.append(grid.get(row).get(col));
                 row++;
                 col--;
             }
 
-            if (sb.length() < 4)
-                continue;
+            if (sb.length() < 4) continue;
 
             diagonals.add(sb.toString());
         }
@@ -126,16 +121,14 @@ public class Day4 {
             int row = 0;
 
             for (int step = 0; step < COLS; step++) {
-                if (isOutOfBounds(row, col, ROWS, COLS))
-                    continue;
+                if (isOutOfBounds(row, col, ROWS, COLS)) continue;
 
                 sb.append(grid.get(row).get(col));
                 row++;
                 col--;
             }
 
-            if (sb.length() < 4)
-                continue;
+            if (sb.length() < 4) continue;
 
             diagonals.add(sb.toString());
         }
@@ -158,6 +151,41 @@ public class Day4 {
 
     }
 
+    @SneakyThrows
+    public void partTwo() {
+        scanner = new Scanner(file);
+
+        List<List<Character>> grid = new ArrayList<>();
+        int ROWS;
+        int COLS;
+
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            List<Character> row = new ArrayList<>();
+
+            for (Character c : line.toCharArray()) {
+                row.add(c);
+            }
+
+            grid.add(row);
+        }
+
+        ROWS = grid.size();
+        COLS = grid.getFirst().size();
+
+        int count = 0;
+
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLS; col++) {
+                if (grid.get(row).get(col) == 'A') {
+                    if (isXmas(row, col, ROWS, COLS, grid)) count += 1;
+                }
+            }
+        }
+
+        System.out.println("Day 4 Part 2: " + count);
+    }
+
     private boolean isOutOfBounds(int row, int col, int ROWS, int COLS) {
         return row < 0 || row >= ROWS || col < 0 || col >= COLS;
     }
@@ -177,4 +205,33 @@ public class Day4 {
 
         return count;
     }
+
+    private boolean isXmas(int row, int col, int ROWS, int COLS, List<List<Character>> grid) {
+        int rowUp = row - 1;
+        int rowDown = row + 1;
+        int colLeft = col - 1;
+        int colRight = col + 1;
+
+        if (isOutOfBounds(rowUp, colLeft, ROWS, COLS)) return false;
+
+        if (isOutOfBounds(rowUp, colRight, ROWS, COLS)) return false;
+
+        if (isOutOfBounds(rowDown, colLeft, ROWS, COLS)) return false;
+
+        if (isOutOfBounds(rowDown, colRight, ROWS, COLS)) return false;
+
+        char upLeft = grid.get(rowUp).get(colLeft);
+        char upRight = grid.get(rowUp).get(colRight);
+        char downLeft = grid.get(rowDown).get(colLeft);
+        char downRight = grid.get(rowDown).get(colRight);
+
+        String leftDiag = "" + upLeft + 'A' + downRight;
+        String rightDiag = "" + upRight + 'A' + downLeft;
+
+        boolean isLeftOk = leftDiag.equals("SAM") || leftDiag.equals("MAS");
+        boolean isRightOk = rightDiag.equals("SAM") || rightDiag.equals("MAS");
+
+        return isLeftOk && isRightOk;
+    }
+
 }
