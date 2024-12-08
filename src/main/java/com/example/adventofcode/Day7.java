@@ -15,6 +15,7 @@ public class Day7 {
 
     public Day7() {
         partOne();
+        partTwo();
     }
 
     @SneakyThrows
@@ -23,7 +24,7 @@ public class Day7 {
         List<Problem> problems = new ArrayList<>();
 
         while (scanner.hasNextLine()) {
-            problems.add(readLine(scanner.nextLine()));
+            problems.add(readLine(scanner.nextLine(), List.of('+', '*')));
         }
 
         long sum = 0;
@@ -40,7 +41,30 @@ public class Day7 {
         System.out.println("Day 7 Part 1: " + sum);
     }
 
-    private Problem readLine(String line) {
+    @SneakyThrows
+    public void partTwo() {
+        scanner = new Scanner(file);
+        List<Problem> problems = new ArrayList<>();
+
+        while (scanner.hasNextLine()) {
+            problems.add(readLine(scanner.nextLine(), List.of('+', '*', 'I')));
+        }
+
+        long sum = 0;
+
+        for (Problem p : problems) {
+            for (List<Character> variation : p.getOperatorVariations()) {
+                if (evaluate(p.getOperands(), variation, p.getResult())) {
+                    sum += p.getResult();
+                    break;
+                }
+            }
+        }
+
+        System.out.println("Day 7 Part 2: " + sum);
+    }
+
+    private Problem readLine(String line, List<Character> allowedOperators) {
         String[] tokens = line.split(":");
 
         long result = Long.parseLong(tokens[0]);
@@ -50,8 +74,8 @@ public class Day7 {
             operands.add(Long.parseLong(token));
         }
 
-        int requiredOperators = operands.size() - 1;
-        List<List<Character>> variations = variations(List.of('*', '+'), requiredOperators);
+        int operatorCount = operands.size() - 1;
+        List<List<Character>> variations = variations(allowedOperators, operatorCount);
 
         return new Problem(result, operands, variations);
     }
@@ -85,8 +109,10 @@ public class Day7 {
 
             if (c == '+') {
                 left = (left + right);
-            } else {
+            } else if (c == '*') {
                 left = (left * right);
+            } else {
+                left = Long.parseLong("" + left + right);
             }
 
             i += 1;
